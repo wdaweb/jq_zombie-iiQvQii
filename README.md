@@ -8,7 +8,7 @@
 - 中英文可切換，預設英文。
 ![image](https://github.com/wdaweb/jq_zombie-iiQvQii/blob/master/img/chinese.png)
 ### 遊戲畫面預覽
-![image](https://github.com/wdaweb/jq_zombie-iiQvQii/blob/master/img/during.png)
+![image](https://github.com/wdaweb/jq_zombie-iiQvQii/blob/master/img/game.png)
 
 # 泰山職訓前端班打殭屍小遊戲作業
 
