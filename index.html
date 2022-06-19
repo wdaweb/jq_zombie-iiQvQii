@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Color Word</title>
+  <link rel="stylesheet" href="./css/reset.css">
+  <link rel="stylesheet" href="./css/style.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Noto+Sans+TC:wght@100;300;400;500;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+</head>
+
+<body>
+  <div class="container">
+    <div id="infoArea">
+      <div class="score">
+        <img src="./img/score.svg" alt="scoreSVG">
+        <span id="text-score">0</span>
+      </div>
+      <div class="time">
+        <img src="./img/time.svg" alt="timeSVG">
+        <span id="text-time">0</span>
+      </div>
+      <input type="button" value="中文" id="btn-change">
+      <input type="button" value="TIME" id="btn-settings">
+    </div>
+    <div id="game">
+      <img src="./img/title.svg" class="title" alt="titleSVG" width=800
+        style="position:absolute; left:50%;top:50%; transform: translate(-50%,-50%);">
+    </div>
+    <div id="btnArea">
+      <input type="button" value="START" id="btn-start">
+    </div>
+  </div>
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js'
+    integrity='sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=='
+    crossorigin='anonymous'></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    let score = 0
+    let countdown = 10
+    let selectedTime = 0
+    let lang = true
+    // true英 false中
+    let ctArr = ['白', '紅', '綠', '藍', '紫', '橘', '黃', '黑']
+    let colorArr = ['white', 'red', 'green', 'blue', 'purple', 'orange', 'yellow', 'black']
+    var startAudio = new Audio('./wav/click.wav')
+    var correctAudio = new Audio('./wav/correct.wav')
+    var wrongAudio = new Audio('./wav/wrong.wav')
+
+
+    // 移動殭屍的function 在裡面再呼叫自己去一直移動
+    function move(Word) {
+      const top = Math.round(Math.random() * 80) + '%'
+      const left = Math.round(Math.random() * 80) + '%'
+      // top(CSS):top(變數) 可以簡寫成top(cuz變數跟value一樣)
+      Word.stop().animate({ top, left }, 3000, function () {
+        move(Word)
+      })
+    }
+    $('#btn-settings').on('click', function () {
+      // let ctTitle = '請選擇遊戲時間'
+      // let enTitle = 'Please Select Game Time'
+      (async () => {
+        /* inputOptions can be an object or Promise */
+        const inputOptions = new Promise((resolve) => {
+          setTimeout(() => {
+            resolve({
+              '5': 5,
+              '10': 10,
+              '30': 30,
+              '60': 60,
+            })
+          }, 100)
+        })
+
+        const { value: sec } = await Swal.fire({
+          title: `Please Select Game Time<br>`,
+          text: `請選擇遊戲時間 `,
+          input: 'radio',
+          inputOptions: inputOptions,
+          inputValidator: (value) => {
+            if (!value) {
+              return 'You need to choose something!'
+            }
+          }
+        })
+
+        if (sec) {
+          Swal.fire({
+            html: `You selected: ${sec} s
+            <br>
+            Now you can click the START! `
+          })
+        }
+        countdown = sec
+        selectedTime = sec
+      })()
+      // console.log(second);
+    })
+    $('#btn-start').click(function () {
+      console.log(selectedTime);
+
+      startAudio.play()
+      $('#game img').remove()
+      // RESET
+      $(this).attr('disabled', true)
+      $('#btn-change').attr('disabled', true)
+      $('#btn-settings').attr('disabled', true)
+      score = 0
+      $('#text-score').text(score)
+      if (selectedTime === 0) {
+        Swal.fire({
+          icon: 'warning',
+          title: `Please select a game time first!
+          <br>
+          請選擇遊戲時間!`
+        })
+      } else {
+        countdown = selectedTime
+        $('#text-time').text(countdown)
+      }
+
+      // start game
+      timer = setInterval(function () {
+
+        // 隨機出現
+        const random = Math.round(Math.random() * 7)
+        const randomColor = Math.round(Math.random() * 7)
+
+        // 出現
+        if ((selectedTime !== 0) && ($('#game .word').length < 10)) {
+          // 開始倒數
+          countdown--
+          $('#text-time').text(countdown)
+          const top = Math.round(Math.random() * 70) + '%'
+          const left = Math.round(Math.random() * 70) + '%'
+          // 在#game裡面出現文字
+          const enWord = $(`<span class="word" style="top:${top}; left:${left};color:${colorArr[randomColor]}">${colorArr[random]}</span>`)
+          const ctWord = $(`<span class="word" style="top:${top}; left:${left};color:${colorArr[randomColor]}">${ctArr[random]}</span>`)
+          // 英文/中文模式
+          if (lang) {
+            $('#game').append(enWord)
+            move(enWord)
+          } else {
+            $('#game').append(ctWord)
+            $('#game .word').css({ 'font-family': 'Noto Sans TC', 'font-weight': '900', 'font-size': '5rem', 'padding': '1rem' })
+            move(ctWord)
+          }
+        } else {
+          clearInterval(timer)
+          $('#btn-start').attr('disabled', false)
+          $('#btn-change').attr('disabled', false)
+          $('#btn-settings').attr('disabled', false)
+
+        }
+        // 時間到，清空文字+重啟開始鈕
+        if (countdown <= 0) {
+          clearInterval(timer)
+          clearInterval(remove)
+          $('#game span').remove()
+          $('#btn-start').attr('disabled', false)
+          $('#btn-change').attr('disabled', false)
+          $('#btn-settings').attr('disabled', false)
+          const title = $('<img src="./img/title.svg" class="title" alt="titleSVG" width=800 style="position:absolute; left:50%;top:50%; transform: translate(-50%,-50%);">')
+          $('#game').append(title)
+          if (score < 2) {
+            Swal.fire({
+              title: 'You sucks!',
+              text: `You Got ${score} Points.`,
+              imageUrl: './img/title.svg',
+              imageWidth: 400,
+              imageHeight: 200,
+              imageAlt: 'color word',
+              showClass: {
+                popup: 'animate__animated animate__fadeInDown'
+              },
+              hideClass: {
+                popup: 'animate__animated animate__fadeOutUp'
+              }
+            })
+          } else {
+            Swal.fire({
+              title: 'You did a great job!',
+              text: `You Got ${score} Points.`,
+              showClass: {
+                popup: 'animate__animated animate__fadeInDown'
+              },
+              hideClass: {
+                popup: 'animate__animated animate__fadeOutUp'
+              }
+            })
+          }
+        }
+      }, 1000)
+
+      // 讓沒被點擊的消失
+      const remove = setInterval(function () {
+        $('#game span').eq(0).remove()
+      }, 3000)
+    })
+
+    // 點擊中的時候
+    $('#game').on('click', '.word', function () {
+      // 加中文的判斷
+      $(this).addClass('p-events')
+      const color = $(this).css('color')
+      const text = $(this).text()
+      if (lang && ((color === 'rgb(255, 255, 255)' && text === colorArr[0]) ||
+        (color === 'rgb(255, 0, 0)' && text === colorArr[1]) ||
+        (color === 'rgb(0, 128, 0)' && text === colorArr[2]) ||
+        (color === 'rgb(0, 0, 255)' && text === colorArr[3]) ||
+        (color === 'rgb(128, 0, 128)' && text === colorArr[4]) ||
+        (color === 'rgb(255, 165, 0)' && text === colorArr[5]) ||
+        (color === 'rgb(255, 255, 0)' && text === colorArr[6]) ||
+        (color === 'rgb(0, 0, 0)' && text === colorArr[7]))) {
+        correctAudio.play()
+        $(this).text(`v`)
+        score++
+        $('#text-score').text(score)
+      } else if (!lang && ((color === 'rgb(255, 255, 255)' && text === ctArr[0]) ||
+        (color === 'rgb(255, 0, 0)' && text === ctArr[1]) ||
+        (color === 'rgb(0, 128, 0)' && text === ctArr[2]) ||
+        (color === 'rgb(0, 0, 255)' && text === ctArr[3]) ||
+        (color === 'rgb(128, 0, 128)' && text === ctArr[4]) ||
+        (color === 'rgb(255, 165, 0)' && text === ctArr[5]) ||
+        (color === 'rgb(255, 255, 0)' && text === ctArr[6]) ||
+        (color === 'rgb(0, 0, 0)' && text === ctArr[7]))) {
+        correctAudio.play()
+        $(this).text(`v`)
+        score++
+        $('#text-score').text(score)
+      } else {
+        wrongAudio.play()
+        $(this).text('x')
+      }
+
+      $(this).removeClass('word')
+      $(this).stop()
+      setTimeout(() => {
+        $(this).remove()
+      }, 800)
+    })
+
+    $('#btn-change').on('click', function () {
+      lang = !lang
+      if (lang) {
+        $(this).attr('value', '中文')
+        $('#btn-start').attr('value', 'START')
+        $('#btn-start').css({ 'font-family': 'Fredoka One', 'font-weight': '900' })
+        $('#btn-settings').attr('value', 'TIME')
+      } else {
+        $(this).attr('value', 'EN')
+        $('#btn-start').attr('value', ' 開始')
+        $('#btn-start').css({ 'font-family': 'Noto Sans TC', 'font-weight': '900', 'line-height': '0' })
+        $('#btn-settings').attr('value', '時間')
+        $('#btn-settings').css({ 'font-family': 'Noto Sans TC', 'font-weight': '900', 'line-height': '0' })
+      }
+    })
+
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,155 @@
+body {
+  height: 100vh;
+}
+
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Fredoka One', cursive;
+
+}
+
+#infoArea {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+#infoArea .score {
+  display: flex;
+  align-items: center;
+  padding-right: 50px;
+}
+
+#infoArea .time {
+  display: flex;
+  align-items: center;
+}
+
+#infoArea img {
+  height: 70px;
+  margin-right: 1rem;
+}
+
+#infoArea span {
+  font-size: 3.5rem;
+  line-height: 70px;
+  letter-spacing: 10px;
+  display: inline-block;
+  width: 50px;
+}
+
+
+/* 中/EN */
+#btn-settings,
+#btn-change {
+  font-family: 'Noto Sans TC', sans-serif;
+  line-height: 0px;
+  width: 140px;
+  position: absolute;
+  right: 0;
+  letter-spacing: 5px;
+  margin-right: 8px;
+  font-weight: 900;
+  font-size: 1.5rem;
+}
+
+#btn-settings {
+  font-family: 'Fredoka One', cursive;
+  right: 160px;
+}
+
+#btn-settings:hover,
+#btn-change:hover {
+  color: white;
+  background: #000;
+}
+
+#btnArea {
+  width: 100%;
+  height: 60px;
+  background: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+}
+
+input {
+  width: 200px;
+  height: 50px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 2rem;
+  background: #fff;
+  border-radius: 50px;
+  transition: .5s;
+  margin: auto;
+}
+
+
+
+input[type="button"]:hover {
+  background: #eee;
+  cursor: pointer;
+  letter-spacing: 5px;
+}
+
+#game {
+  position: relative;
+  background: url('../img/bg.svg')center center/cover;
+  overflow: hidden;
+  height: 750px;
+  width: 1200px;
+  cursor: url('../img/aim.png') 50 50, auto;
+  margin: auto;
+  /* border: 3px solid #fff; */
+  display: flex;
+  border-radius: 50px;
+}
+
+#game span {
+  position: absolute;
+  -webkit-user-drag: none;
+  user-select: none;
+  font-size: 4rem;
+  /* background: #000; */
+}
+
+.p-events {
+  /* 忽略點擊事件要下在上層，(div疊在一起時，只有上層會被點擊，所以要用none忽略，才可以點到下面的) */
+  pointer-events: none;
+}
+
+.title {
+  opacity: 1;
+  animation: move 1s cubic-bezier(0.075, 0.82, 0.165, 1) infinite;
+}
+
+@keyframes move {
+  50% {
+    opacity: 0;
+  }
+}
+
+.swal2-popup input {
+  width: 20px;
+  height: 20px;
+}
+
+.swal2-html-container,
+.swal2-popup h2,
+.swal2-popup span,
+.swal2-popup button {
+  font-size: 1.5rem;
+  font-family: 'Noto Sans TC', 'Fredoka One', cursive;
+}
+
+.swal2-container {
+  padding: 0;
+}
